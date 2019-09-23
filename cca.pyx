@@ -66,7 +66,7 @@ cdef int next_state_neumann(long[:, :] arr, int x, int y,
 
     for row in range(top, bottom):
         for col in range(left, right):
-            if (abs(x - row) + abs(y - column)) > rang:
+            if (abs(x - row) + abs(y - col)) > rang:
                 continue
             successor = next_val(val, max_val)
             if arr[row, col] == successor:
@@ -75,11 +75,13 @@ cdef int next_state_neumann(long[:, :] arr, int x, int y,
                 return successor
     return val
 
-
-cpdef next_phase(long[:, :] arr, int max_val, int threshold, int rang):
+cpdef next_phase(long[:, :] arr, int max_val, int threshold, int rang, str hood):
     h, w = arr.shape[1], arr.shape[0]
     A = np.empty((w, h), dtype=int)
     for i in range(w):
         for j in range(h):
-            A[i, j] = next_state(arr, i, j, w, h, max_val, threshold, rang)
-    return A   
+            if hood == 'moore':
+                A[i, j] = next_state_moore(arr, i, j, w, h, max_val, threshold, rang)
+            else:
+                A[i, j] = next_state_neumann(arr, i, j, w, h, max_val, threshold, rang)
+    return A
