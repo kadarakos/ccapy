@@ -1,4 +1,5 @@
 from cpython cimport array
+from libc.math cimport abs
 import array
 import numpy as np
 cimport numpy as np

@@ -1,0 +1,5 @@
+cca.c
+*.so
+*.mp4
+.venv
+build/
