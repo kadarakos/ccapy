@@ -38,9 +38,9 @@ cdef int next_state_moore(long[:, :] arr, int x, int y,
     """
     cdef int val = arr[x, y]
     cdef int top = max(x - rang, 0)
-    cdef int bottom = min(x + rang, h)
+    cdef int bottom = min(x + rang + 1, h)
     cdef int left = max(y - rang, 0)
-    cdef int right = min(y + rang, w)
+    cdef int right = min(y + rang + 1, w)
     cdef int n_succesor = 0
     cdef int row, col
 
@@ -68,9 +68,9 @@ cdef int next_state_neumann(long[:, :] arr, int x, int y,
     """
     cdef int val = arr[x, y]
     cdef int top = max(x - rang, 0)
-    cdef int bottom = min(x + rang, h)
+    cdef int bottom = min(x + rang + 1, h)
     cdef int left = max(y - rang, 0)
-    cdef int right = min(y + rang, w)
+    cdef int right = min(y + rang + 1, w)
     cdef int n_succesor = 0
     cdef int row, col
 
@@ -86,18 +86,18 @@ cdef int next_state_neumann(long[:, :] arr, int x, int y,
     return val
 
 cpdef next_phase(long[:, :] arr, int max_val, int threshold, int rang, str hood):
-    h, w = arr.shape[1], arr.shape[0]
-    A = np.empty((w, h), dtype=int)
-    B = np.empty((w, h, 3), dtype=int)
+    h, w = arr.shape[0], arr.shape[1]
+    cdef long[:, :] A = np.empty((h, w), dtype=int)
+    cdef long[:, :, :] B = np.empty((h, w, 3), dtype=int)
 
-    for i in range(w):
-        for j in range(h):
+    for i in range(h):
+        for j in range(w):
             if hood == 'moore':
-                s = next_state_moore(arr, i, j, w, h, max_val, threshold, rang)
+                s = next_state_moore(arr, i, j, h, w, max_val, threshold, rang)
                 A[i, j] = s
                 B[i, j, :] = COLORS[s]
             else:
-                s = next_state_neumann(arr, i, j, w, h, max_val, threshold, rang)
+                s = next_state_neumann(arr, i, j, h, w, max_val, threshold, rang)
                 A[i, j] = s
                 B[i, j, :] = COLORS[s]    
     return A, B

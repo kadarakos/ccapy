@@ -6,6 +6,7 @@ import av
 from datetime import datetime
 
 parser = argparse.ArgumentParser(description='Cyclic Cellular Automaton simulation')
+parser.add_argument('--rule_str', type=str, default='')
 parser.add_argument('--num_states', type=int, default=5)
 parser.add_argument('--random_seed', type=int, default=1, help='random seed')
 parser.add_argument('--width', type=int, default=500)
@@ -19,6 +20,13 @@ parser.add_argument('--hood', type=str, choices=["moore", "neumann"],
 
 args = parser.parse_args()
 np.random.seed(args.random_seed)
+if args.rule_str:
+    r, t, s, n = args.rule_str.split('/')
+    args.range = int(r)
+    args.threshold = int(t)
+    args.num_states = int(s) 
+    args.hood = 'neumann' if n == 'N' else 'moore'
+
 states = np.random.randint(0, args.num_states, (args.width, args.height), dtype=int)
 
 fps = 15
@@ -34,6 +42,7 @@ for i in tqdm.tqdm(range(args.num_frames)):
                                      args.threshold, args.range,
                                      args.hood)
         # print(img)
+        img = np.array(img)
         img = img.astype(np.uint8)
     
         frame = av.VideoFrame.from_ndarray(img, format='rgb24')
