@@ -4,6 +4,7 @@ import cca
 import tqdm
 import av
 from datetime import datetime
+import random
 
 parser = argparse.ArgumentParser(description='Cyclic Cellular Automaton simulation')
 parser.add_argument('--rule_str', type=str, default='')
@@ -17,9 +18,15 @@ parser.add_argument('--num_frames', type=int, default=5)
 parser.add_argument('--fname', type=str, default='movie.mp4')
 parser.add_argument('--hood', type=str, choices=["moore", "neumann"],
                      default='moore')
+parser.add_argument('--hood_switch_prob', type=float, default=0)
+
+
+def flip(p):
+    return random.random() < p
 
 args = parser.parse_args()
 np.random.seed(args.random_seed)
+random.seed(args.random_seed)
 if args.rule_str:
     r, t, s, n = args.rule_str.split('/')
     args.range = int(r)
@@ -38,6 +45,10 @@ stream.height = args.height
 stream.pix_fmt = 'yuv420p'
 
 for i in tqdm.tqdm(range(args.num_frames)):
+        if flip(args.hood_switch_prob):
+            tmp = args.hood
+            args.hood = 'neumann' if tmp == 'moore' else 'moore'
+
         states, img = cca.next_phase(states, args.num_states - 1,
                                      args.threshold, args.range,
                                      args.hood)
