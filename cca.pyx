@@ -1,5 +1,4 @@
 from cpython cimport array
-from libc.math cimport abs
 import array
 import numpy as np
 cimport numpy as np
@@ -35,7 +34,7 @@ cdef int next_state_moore(long[:, :] arr, int x, int y,
     cdef int left = max(y - rang, 0)
     cdef int right = min(y + rang, w)
     cdef int n_succesor = 0
-
+    cdef int row, col
     for row in range(top, bottom):
         for col in range(left, right):
             successor = next_val(val, max_val)
@@ -64,6 +63,7 @@ cdef int next_state_neumann(long[:, :] arr, int x, int y,
     cdef int left = max(y - rang, 0)
     cdef int right = min(y + rang, w)
     cdef int n_succesor = 0
+    cdef int row, col
 
     for row in range(top, bottom):
         for col in range(left, right):
