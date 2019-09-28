@@ -8,6 +8,14 @@ I think ill need the boudnary checks off for speed.
 #cython: boundscheck=False, wraparound=False, nonecheck=False
 """
 
+cdef long[:, :] COLORS = np.array([
+    [249,208,137],
+    [255,156,91],
+    [58,128,130],
+    [245,99,74],
+    [235,47,59],
+])
+
 cdef int next_val(int n, int max_val):
     if n < max_val:
         return n + 1
@@ -35,6 +43,7 @@ cdef int next_state_moore(long[:, :] arr, int x, int y,
     cdef int right = min(y + rang, w)
     cdef int n_succesor = 0
     cdef int row, col
+
     for row in range(top, bottom):
         for col in range(left, right):
             successor = next_val(val, max_val)
@@ -79,10 +88,16 @@ cdef int next_state_neumann(long[:, :] arr, int x, int y,
 cpdef next_phase(long[:, :] arr, int max_val, int threshold, int rang, str hood):
     h, w = arr.shape[1], arr.shape[0]
     A = np.empty((w, h), dtype=int)
+    B = np.empty((w, h, 3), dtype=int)
+
     for i in range(w):
         for j in range(h):
             if hood == 'moore':
-                A[i, j] = next_state_moore(arr, i, j, w, h, max_val, threshold, rang)
+                s = next_state_moore(arr, i, j, w, h, max_val, threshold, rang)
+                A[i, j] = s
+                B[i, j, :] = COLORS[s]
             else:
-                A[i, j] = next_state_neumann(arr, i, j, w, h, max_val, threshold, rang)
-    return A
+                s = next_state_neumann(arr, i, j, w, h, max_val, threshold, rang)
+                A[i, j] = s
+                B[i, j, :] = COLORS[s]    
+    return A, B
