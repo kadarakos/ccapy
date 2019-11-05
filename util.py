@@ -2,9 +2,11 @@
 # import matplotlib
 # from pylab import savefig
 import random
-from typing import NamedTuple
 import numpy as np
+from dataclasses import dataclass
+
 import cca
+
 
 def save_image(image_data, f):
     '''
@@ -27,32 +29,36 @@ def save_image(image_data, f):
 def flip(p):
     return random.random() < p
 
-Inputs = NamedTuple('args',
-  [
-    ('width', int), ('height', int), ('num_states', int), 
-    ('threshold', int), ('range', int), ('hood', str), ('hood_switch_prob', float),
-    ('random_seed', int)
-  ]
-)
 
-def cca_rule_str_parser(rule_str: str, args: Inputs): 
+@dataclass
+class CCAInputs:
+    width: int
+    height: int
+    num_states: int
+    threshold: int
+    range_value: int
+    hood: str
+    hood_switch_prob: float
+    random_seed: int
+
+
+def cca_rule_str_parser(rule_str: str, args: CCAInputs): 
   if rule_str:
       r, t, s, n = rule_str.split('/')
-      args.range = int(r)
+      args.range_value = int(r)
       args.threshold = int(t)
       args.num_states = int(s) 
       args.hood = 'neumann' if n == 'N' else 'moore'
 
 
-def generate_cca_frame(states, args: Inputs):
+def generate_cca_frame(states, args: CCAInputs):
     if flip(args.hood_switch_prob):
-        tmp = args.hood
-        args.hood = 'neumann' if tmp == 'moore' else 'moore'
+        args.hood = 'neumann' if args.hood == 'moore' else 'moore'
 
     states, img = cca.next_phase(states, args.num_states - 1,
-                                  args.threshold, args.range,
+                                  args.threshold, args.range_value,
                                   args.hood)
-    # print(img)
+
     img = np.array(img)
     img = img.astype(np.uint8)
-    return img
+    return states, img

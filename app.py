@@ -3,7 +3,7 @@
 # TODO: replace Flask with FastAPI for modern streaming features + async handlers
 # from fastapi import FastAPI
 import cv2
-from util import Inputs, generate_cca_frame
+from util import CCAInputs, generate_cca_frame
 from streamer import BaseStreamer
 import threading
 from flask import Flask, render_template, Response
@@ -12,12 +12,12 @@ import time
 
 outputFrame = None
 lock = threading.Lock()
-args = Inputs(
+args = CCAInputs(
   num_states=5,
   width=400,
   height=400,
   threshold=3,
-  range=3,
+  range_value=3,
   hood='moore',
   hood_switch_prob=0.1,
   random_seed=5000
@@ -25,7 +25,7 @@ args = Inputs(
 
 app = Flask(__name__)
 
-class CCAStream(BaseStreamer):  
+class CCAStream(BaseStreamer):
     def __init__(self):
         super(CCAStream, self).__init__()
 
@@ -37,9 +37,9 @@ class CCAStream(BaseStreamer):
         counter = 0
 
         while True:
-          img = generate_cca_frame(states, args)
+          states, img = generate_cca_frame(states, args)
 
-          counter+=1
+          counter += 1
           if (time.time() - start_time) > x :
               print("FPS: ", counter / (time.time() - start_time))
               counter = 0

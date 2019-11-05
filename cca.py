@@ -52,7 +52,6 @@ for i in tqdm.tqdm(range(args.num_frames)):
         states, img = cca.next_phase(states, args.num_states - 1,
                                      args.threshold, args.range,
                                      args.hood)
-        # print(img)
         img = np.array(img)
         img = img.astype(np.uint8)
     
