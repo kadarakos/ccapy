@@ -8,14 +8,6 @@ I think ill need the boudnary checks off for speed.
 #cython: boundscheck=False, wraparound=False, nonecheck=False
 """
 
-cdef long[:, :] COLORS = np.array([
-    [249,208,137],
-    [255,156,91],
-    [58,128,130],
-    [245,99,74],
-    [235,47,59],
-])
-
 cdef int next_val(int n, int max_val):
     if n < max_val:
         return n + 1
@@ -85,7 +77,7 @@ cdef int next_state_neumann(long[:, :] arr, int x, int y,
                 return successor
     return val
 
-cpdef next_phase(long[:, :] arr, int max_val, int threshold, int rang, str hood):
+cpdef next_phase(long[:, :] arr, long[:, :] color_map, int max_val, int threshold, int rang, str hood):
     h, w = arr.shape[0], arr.shape[1]
     cdef long[:, :] A = np.empty((h, w), dtype=int)
     cdef long[:, :, :] B = np.empty((h, w, 3), dtype=int)
@@ -95,9 +87,9 @@ cpdef next_phase(long[:, :] arr, int max_val, int threshold, int rang, str hood)
             if hood == 'moore':
                 s = next_state_moore(arr, i, j, h, w, max_val, threshold, rang)
                 A[i, j] = s
-                B[i, j, :] = COLORS[s]
+                B[i, j, :] = color_map[s]
             else:
                 s = next_state_neumann(arr, i, j, h, w, max_val, threshold, rang)
                 A[i, j] = s
-                B[i, j, :] = COLORS[s]    
+                B[i, j, :] = color_map[s]
     return A, B

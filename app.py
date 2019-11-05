@@ -13,14 +13,21 @@ import time
 outputFrame = None
 lock = threading.Lock()
 args = CCAInputs(
-  num_states=5,
+  num_states=4,
   width=400,
   height=400,
   threshold=3,
   range_value=3,
   hood='moore',
-  hood_switch_prob=0.1,
-  random_seed=5000
+  hood_switch_prob=0.0,
+  random_seed=5000,
+  color_map=np.array([
+      [249,208,137],
+      [255,156,91],
+      [58,128,130],
+      [245,99,74],
+      [235,47,59],
+  ]),
 )
 
 app = Flask(__name__)

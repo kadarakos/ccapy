@@ -40,6 +40,7 @@ class CCAInputs:
     hood: str
     hood_switch_prob: float
     random_seed: int
+    color_map: np.array
 
 
 def cca_rule_str_parser(rule_str: str, args: CCAInputs): 
@@ -55,7 +56,8 @@ def generate_cca_frame(states, args: CCAInputs):
     if flip(args.hood_switch_prob):
         args.hood = 'neumann' if args.hood == 'moore' else 'moore'
 
-    states, img = cca.next_phase(states, args.num_states - 1,
+    states, img = cca.next_phase(states, args.color_map,
+                                  args.num_states - 1,
                                   args.threshold, args.range_value,
                                   args.hood)
 
