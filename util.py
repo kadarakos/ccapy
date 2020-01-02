@@ -1,6 +1,12 @@
-import matplotlib.pyplot as plt
-import matplotlib
-from pylab import savefig
+# import matplotlib.pyplot as plt
+# import matplotlib
+# from pylab import savefig
+import random
+import numpy as np
+from dataclasses import dataclass
+
+import cca
+
 
 def save_image(image_data, f):
     '''
@@ -19,3 +25,42 @@ def save_image(image_data, f):
     fname = str(f) + '.png'
     savefig(fname, bbox_inches='tight', pad_inches=0.0)
     return fname
+
+def flip(p):
+    return random.random() < p
+
+
+@dataclass
+class CCAInputs:
+    width: int
+    height: int
+    num_states: int
+    threshold: int
+    range_value: int
+    hood: str
+    hood_switch_prob: float
+    random_seed: int
+    color_map: np.array
+
+
+def cca_rule_str_parser(rule_str: str, args: CCAInputs): 
+  if rule_str:
+      r, t, s, n = rule_str.split('/')
+      args.range_value = int(r)
+      args.threshold = int(t)
+      args.num_states = int(s) 
+      args.hood = 'neumann' if n == 'N' else 'moore'
+
+
+def generate_cca_frame(states, args: CCAInputs):
+    if flip(args.hood_switch_prob):
+        args.hood = 'neumann' if args.hood == 'moore' else 'moore'
+
+    states, img = cca.next_phase(states, args.color_map,
+                                  args.num_states - 1,
+                                  args.threshold, args.range_value,
+                                  args.hood)
+
+    img = np.array(img)
+    img = img.astype(np.uint8)
+    return states, img

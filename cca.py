@@ -44,15 +44,22 @@ stream.width = args.width
 stream.height = args.height
 stream.pix_fmt = 'yuv420p'
 
+color_map = np.array([
+    [249,208,137],
+    [255,156,91],
+    [58,128,130],
+    [245,99,74],
+    [235,47,59],
+])
+
 for i in tqdm.tqdm(range(args.num_frames)):
         if flip(args.hood_switch_prob):
             tmp = args.hood
             args.hood = 'neumann' if tmp == 'moore' else 'moore'
 
-        states, img = cca.next_phase(states, args.num_states - 1,
+        states, img = cca.next_phase(states, color_map, args.num_states - 1,
                                      args.threshold, args.range,
                                      args.hood)
-        # print(img)
         img = np.array(img)
         img = img.astype(np.uint8)
     

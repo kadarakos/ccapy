@@ -17,6 +17,11 @@ cython = "*"
 bokeh = "*"
 ffmpeg = "*"
 av = "*"
+fastapi = "*"
+imutils = "*"
+uvicorn = "*"
+flask = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"

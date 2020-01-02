@@ -14,3 +14,4 @@ Its quite slow right now, which I plan to improve upon soon.
  python cca.py --hood neumann --range 3 --num_frames 30 --threshold 4 --width 200 --height 200 --num_frames 400
 ```
 ![](anim.gif)
+
